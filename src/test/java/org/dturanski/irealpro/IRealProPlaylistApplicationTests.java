@@ -2,7 +2,7 @@ package org.dturanski.irealpro;
 
 import java.io.File;
 
-import org.dturanski.irealpro.song.domain.Song;
+import org.dturanski.irealpro.song.domain.SongEntity;
 import org.dturanski.irealpro.song.repository.SongRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +27,7 @@ public class IRealProPlaylistApplicationTests {
 	@Test
 	public void contextLoads() {
 		assertThat(new File(dbFile).exists()).isTrue();
-		Iterable<Song> songList = songsRepository.findAll();
+		Iterable<SongEntity> songList = songsRepository.findAll();
 		songList.forEach(System.out::println);
 	}
 

@@ -11,7 +11,7 @@ import org.springframework.data.relational.core.mapping.Table;
  **/
 @Data
 @Table("ZSONG")
-public class Song {
+public class SongEntity {
 	@Id
 	@Column("Z_PK")
 	Long id;

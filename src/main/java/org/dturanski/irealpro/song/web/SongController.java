@@ -2,12 +2,13 @@ package org.dturanski.irealpro.song.web;
 
 import java.util.List;
 
-import org.dturanski.irealpro.song.domain.Song;
 import org.dturanski.irealpro.song.service.SongService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author David Turanski
@@ -21,9 +22,8 @@ public class SongController {
 	}
 
 	@GetMapping("/songs")
-	public List<Song> searchByTitle(@RequestParam String title) {
-		return (List<Song>) this.songService.searchSongsByTitle(title);
-
+	public List<SongDTO> searchByTitle(@RequestParam String title) {
+		return this.songService.searchSongsByTitle(title).stream().map(SongDTO::fromEntity).collect(toList());
 	}
 
 }

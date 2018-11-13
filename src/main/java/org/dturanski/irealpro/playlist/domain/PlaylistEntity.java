@@ -11,7 +11,7 @@ import org.springframework.data.relational.core.mapping.Table;
  **/
 @Table("ZPLAYLIST")
 @Data
-public class Playlist {
+public class PlaylistEntity {
 
 	@Id
 	@Column("Z_PK")
