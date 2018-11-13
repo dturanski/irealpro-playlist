@@ -20,17 +20,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import lombok.extern.apachecommons.CommonsLog;
 import lombok.extern.slf4j.Slf4j;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.dturanski.irealpro.song.domain.SongEntity;
 import org.dturanski.irealpro.song.repository.SongRepository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -43,12 +39,9 @@ public class SongService {
 
 	private final SongRepository repository;
 
-	private final JdbcTemplate jdbcTemplate;
-
-	public SongService(SongRepository repository, JdbcTemplate jdbcTemplate) {
+	public SongService(SongRepository repository) {
 
 		this.repository = repository;
-		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	public List<SongEntity> searchSongsByTitle(String title) {
@@ -77,7 +70,7 @@ public class SongService {
 		if (songEntity == null) {
 			throw new RuntimeException("Cannot find SongEntity with unique ID = " + uniqueid);
 		}
-		if (repository.findSongByTitleAndPlaylist(songEntity.getTitle(),playlistId) != null) {
+		if (repository.findSongByTitleAndPlaylist(songEntity.getTitle(), playlistId) != null) {
 			log.warn(songEntity.getTitle() + " already exists in playlist");
 			return;
 		}
