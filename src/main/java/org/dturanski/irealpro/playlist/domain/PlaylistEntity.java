@@ -13,7 +13,6 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 public class Playlist {
 
-	//Z_PK        Z_ENT       Z_OPT       ZSORTINGINDEX  ZCREATEDDATE      ZNAME         ZUNIQUEID
 	@Id
 	@Column("Z_PK")
 	private Long id;

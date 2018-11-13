@@ -1,0 +1,93 @@
+package org.dturanski.irealpro.song.domain;
+
+import lombok.Data;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
+/**
+ * @author David Turanski
+ **/
+@Data
+@Table("ZSONG")
+public class Song {
+	@Id
+	@Column("Z_PK")
+	Long id;
+
+	@Column("ZTITLE")
+	String title;
+
+	@Column("ZPLAYLIST")
+	Long playlistId;
+
+	@Column("ZCHORDPROGRESSION")
+	String chordProgression;
+
+	@Column("ZTRANSPOSITION")
+	String transpose;
+
+	@Column("Z_ENT")
+	private Long entityId;
+
+	@Column("Z_OPT")
+	private Long opt;
+
+	@Column("ZSORTINGINDEX")
+	private Long sortingIndex;
+
+	@Column("ZPLAYLIST")
+	private Long playlist;
+
+	@Column("ZCREATEDDATE")
+	private Double createdDate;
+
+	@Column("ZUNIQUEID")
+	private String uniqueId;
+
+	@Column("ZISTRASHED")
+	private Integer isTrashed = 0;
+
+	@Column("ZPLAYERCHORUSES")
+	private Integer playerChoruses;
+
+	@Column("ZPLAYERTEMPO")
+	private Integer playerTempo;
+
+	@Column("ZMXBASSVOL")
+	private Double bassVol;
+
+	@Column("ZMXDRUMSVOL")
+	private Double drumsVol;
+
+	@Column("ZMXHARM1VOL")
+	private Double harm1Vol;
+
+	@Column("ZMXHARM2VOL")
+	private Double harm2Vol;
+
+	@Column("ZCOMPOSER")
+	String composer;
+
+	@Column("ZKEYSIGNATURE")
+	String keySignature;
+
+	@Column("ZMXBASSINST")
+	String bassInst;
+
+	@Column("ZMXDRUMSINST")
+	String drumsInst;
+
+	@Column("ZMXHARM1INST")
+	String harm1Inst;
+
+	@Column("ZMXHARM2INST")
+	String harm2Inst;
+
+	@Column("ZPLAYERSTYLE")
+	String playerStyle;
+
+	@Column("ZSTYLE")
+	String style;
+}
