@@ -42,7 +42,6 @@ public class SetListServiceIntegrationTests {
 	private SetListService setListService;
 
 	@Test
-	@Transactional
 	public void prepareNumberedListWithKeys() throws IOException {
 
 		String contents = readResource("numbered-setlist.txt");
@@ -82,7 +81,6 @@ public class SetListServiceIntegrationTests {
 	}
 
 	@Test
-	@Transactional
 	public void prepareSimpleListWithKeys() throws IOException {
 
 		String contents = readResource("setlist-with-keys.txt");
@@ -133,7 +131,6 @@ public class SetListServiceIntegrationTests {
 	}
 
 	@Test
-	@Transactional
 	public void prepareSimpleSetListWithNoKeys() throws IOException {
 
 		String contents = readResource("setlist-nokeys.txt");

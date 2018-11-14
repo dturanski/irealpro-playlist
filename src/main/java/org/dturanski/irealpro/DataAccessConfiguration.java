@@ -41,7 +41,7 @@ public class DataAccessConfiguration {
 	public static final double DUMMY_CREATED_DATE = 563468947.832476;
 
 	public static final long DONT_KNOW_WHAT_THIS_IS = 1L;
-	
+
 	@Autowired
 	private PlaylistService playlistService;
 

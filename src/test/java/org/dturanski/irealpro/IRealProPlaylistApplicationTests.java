@@ -37,12 +37,8 @@ public class IRealProPlaylistApplicationTests {
 	@Autowired
 	SongRepository songsRepository;
 
-	@Value("${irealpro.db.file}")
-	String dbFile;
-
 	@Test
 	public void contextLoads() {
-		assertThat(new File(dbFile).exists()).isTrue();
 		Iterable<SongEntity> songList = songsRepository.findAll();
 		songList.forEach(System.out::println);
 	}

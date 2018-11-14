@@ -36,7 +36,6 @@ public class PrimaryKeyRepository {
 	@Query("SELECT * from Z_PRIMARYKEY where Z_NAME='Playlist'")
 	public PrimaryKey playlistPrimaryKey() {
 		return findPrimaryKeyByName("Playlist");
-
 	}
 
 	public PrimaryKey songPrimaryKey() {

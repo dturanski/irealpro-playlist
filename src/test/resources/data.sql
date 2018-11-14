@@ -1,3 +1,7 @@
+TRUNCATE TABLE ZSONG;
+TRUNCATE TABLE ZPLAYLIST;
+TRUNCATE TABLE Z_PRIMARYKEY;
+
 -- I'm Gonna Sit Right Down and Write Myself A Letter
 INSERT INTO ZSONG VALUES(1,2,1,0,0,0,0,NULL,529087146.63086599109,0.0,0.0,0.0,0.0,'[*iG^7   |Abo7   |A-7   |D7   ]{*AT44G^7   |ppD7 |G^7   | x  |G^7   |B7   |C E7 |A-7   |*BN1A-7   |D7   |G^7   |D-7 E7 |A7   | x  |D7   | x  }|*CN2C^7   |C-7   |G^7 D-7 |E7   |A7   |D7   |G^7   | x  Z ','Ahlert Fred','G',NULL,NULL,NULL,NULL,NULL,'Medium Swing','I''m Gonna Sit Right Down and Write Myself A Letter',NULL,'f5021febfde2d0609332457f9a3144831a97a27e');
 -- One I Love (Belongs To Somebody Else), The
@@ -19,5 +23,6 @@ INSERT INTO ZSONG VALUES(10,2,1,0,0,0,0,NULL,529087146.61484199763,0.0,0.0,0.0,0
 -- Taking A Chance On Love
 INSERT INTO ZSONG VALUES(11,2,1,0,0,0,0,NULL,529087146.67380100488,0.0,0.0,0.0,0.0,'T44{*AF^7 D-7 |G-7 D7 |G-7 C7 |F^7 A7 |D-7   |G7   |N1G-7 C7 |sA-7,Ab7,sG-7,C7,}        |N2lG-7 C7 |F6   ][*BC-7 F7 |Bb6 G7(Bo7), |C-7 F7 |Bb^7   |Bb-7 Eb7 |Ab6 Ao7 |Bb-7 Bo7 |C7   ][*AF^7 D-7 |G-7 D7 |G-7 C7 |F^7 A7 |D-7   |G7   |G-7 C7 |F6 s (G-),s (C7)Z ','Duke Vernon','F',NULL,NULL,NULL,NULL,NULL,'Medium Swing','Taking A Chance On Love',NULL,'016f9d449443199eedcfa0f1bf3ba6dd4643ed54');
 
+
 INSERT INTO Z_PRIMARYKEY VALUES(1,'Playlist',0,0);
-INSERT INTO Z_PRIMARYKEY VALUES(2,'Song',0,11);
+INSERT INTO Z_PRIMARYKEY VALUES(2,'Song',0, 11);
