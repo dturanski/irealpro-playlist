@@ -46,12 +46,12 @@ public class SongService {
 
 	public List<SongEntity> searchSongsByTitle(String title) {
 		Assert.hasText(title, "'title' must contain text");
-		SongEntity unique = repository.findSongByTitle(title);
+		SongEntity unique = repository.findOriginalSongByTitle(title);
 		if (unique != null) {
 			return Collections.singletonList(unique);
 		}
 
-		List<SongEntity> songEntityList = StreamSupport.stream(repository.findallSongs().spliterator(), false)
+		List<SongEntity> songEntityList = StreamSupport.stream(repository.findallOriginalSongs().spliterator(), false)
 			.filter(song -> FuzzySearch.tokenSetRatio(song.getTitle(), title) > 90)
 			.collect(Collectors.toList());
 
@@ -64,7 +64,7 @@ public class SongService {
 	}
 
 	public List<SongEntity> findSongsByPlayList(long playlistId) {
-		return (List<SongEntity>) repository.findSongsByPlaylist(playlistId);
+		return (List<SongEntity>) repository.findByPlaylist(playlistId);
 	}
 
 	@Transactional
@@ -74,7 +74,7 @@ public class SongService {
 		if (songEntity == null) {
 			throw new RuntimeException("Cannot find SongEntity with unique ID = " + uniqueid);
 		}
-		if (repository.findSongByTitleAndPlaylist(songEntity.getTitle(), playlistId) != null) {
+		if (repository.findByTitleAndPlaylist(songEntity.getTitle(), playlistId) != null) {
 			log.warn(songEntity.getTitle() + " already exists in playlist");
 			return;
 		}

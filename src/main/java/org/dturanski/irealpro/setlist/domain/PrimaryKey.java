@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package org.dturanski.irealpro.playlist.service;
+package org.dturanski.irealpro.setlist.domain;
 
-import org.dturanski.irealpro.playlist.repository.PlaylistRepository;
+import lombok.Data;
 
-import org.springframework.util.Assert;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * @author David Turanski
  **/
-public class PlaylistService {
+@Data
+@Table("Z_PRIMARYKEY")
+public class PrimaryKey {
 
-	private final PlaylistRepository playlistRepository;
+	@Id
+	@Column(value = "Z_ENT",keyColumn = "Z_ENT")
+	private Long id;
 
-	public PlaylistService(PlaylistRepository playlistRepository) {
-		Assert.notNull(playlistRepository, "'playlistRepository' cannot be null.");
-		this.playlistRepository = playlistRepository;
-	}
+	@Column("Z_NAME")
+	private String name;
 
-	public Long playlistCount() {
-		return this.playlistRepository.count();
-	}
+	@Column("Z_SUPER")
+	private Long unused;
+
+	@Column("Z_MAX")
+	private Long max;
 }

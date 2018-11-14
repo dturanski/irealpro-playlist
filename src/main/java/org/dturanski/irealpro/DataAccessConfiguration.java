@@ -16,11 +16,11 @@
 
 package org.dturanski.irealpro;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.dturanski.irealpro.playlist.domain.PlaylistEntity;
+import org.dturanski.irealpro.playlist.service.PlaylistService;
+import org.dturanski.irealpro.setlist.domain.PrimaryKey;
+import org.dturanski.irealpro.setlist.repository.PrimaryKeyRepository;
 import org.dturanski.irealpro.song.domain.SongEntity;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +37,21 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Configuration
 public class DataAccessConfiguration {
 
+	//TODO: Figure out the TIMESTAMP conversion in sqlite 3.
+	public static final double DUMMY_CREATED_DATE = 563468947.832476;
+
+	public static final long DONT_KNOW_WHAT_THIS_IS = 1L;
+	
 	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	private PlaylistService playlistService;
+
+	@Autowired
+	private PrimaryKeyRepository primaryKeyRepository;
+
+	@Bean
+	public PrimaryKeyRepository primaryKeyRepository(JdbcTemplate jdbcTemplate) {
+		return new PrimaryKeyRepository(jdbcTemplate);
+	}
 
 	@Bean
 	public ApplicationListener<BeforeSaveEvent> beforeSave() {
@@ -54,25 +67,16 @@ public class DataAccessConfiguration {
 
 				playlist.setUniqueId(DigestUtils.sha1Hex(playlist.toString()));
 
-				Map<String, Long> result = jdbcTemplate.queryForObject(
-					"SELECT Z_ENT, Z_MAX from Z_PRIMARYKEY WHERE Z_NAME='Playlist'",
-					(rs, i) -> {
-						Map<String, Long> values = new HashMap<>();
-						values.put("Z_ENT", rs.getLong("Z_ENT"));
-						values.put("Z_MAX", rs.getLong("Z_MAX"));
-						return values;
-					});
+				PrimaryKey playlistPrimaryKey = primaryKeyRepository.playlistPrimaryKey();
 
-				playlist.setEntityId(result.get("Z_ENT"));
-				playlist.setId(result.get("Z_MAX") + 1);
+				playlist.setEntityId(playlistPrimaryKey.getId());
+				playlist.setId(playlistPrimaryKey.getMax() + 1);
 
-				Long count = jdbcTemplate.queryForObject(
-					"SELECT COUNT(*) from ZPLAYLIST",
-					(rs, i) -> rs.getLong(1));
+				Long count = playlistService.playlistCount();
 
 				playlist.setSortingIndex(count + 1);
-				playlist.setCreatedDate(563468947.832476);
-				playlist.setOpt(1L);
+				playlist.setCreatedDate(DUMMY_CREATED_DATE);
+				playlist.setOpt(DONT_KNOW_WHAT_THIS_IS);
 			}
 
 			else if (event.getEntity() instanceof SongEntity) {
@@ -80,13 +84,10 @@ public class DataAccessConfiguration {
 
 				song.setUniqueId(DigestUtils.sha1Hex(song.toString()));
 
-				Long result = jdbcTemplate.queryForObject(
-					"SELECT Z_ENT, Z_MAX from Z_PRIMARYKEY WHERE Z_NAME='Song'",
-					(rs, i) -> {
-						return rs.getLong("Z_MAX");
-					});
-				song.setId(result + 1);
-				song.setCreatedDate(563468947.832476);
+				PrimaryKey songPrimaryKey = primaryKeyRepository.songPrimaryKey();
+
+				song.setId(songPrimaryKey.getMax() + 1);
+				song.setCreatedDate(DUMMY_CREATED_DATE);
 			}
 		};
 	}
@@ -95,25 +96,16 @@ public class DataAccessConfiguration {
 	public ApplicationListener<AfterSaveEvent> afterSave() {
 		return event -> {
 			Object entity = event.getEntity();
+			PrimaryKey primaryKey = null;
 			if (entity instanceof PlaylistEntity) {
-				Long maxPk = jdbcTemplate.queryForObject(
-					"SELECT Z_MAX from Z_PRIMARYKEY WHERE Z_NAME='Playlist'",
-					(rs, i) -> rs.getLong("Z_MAX"));
-				PlaylistEntity playlist = (PlaylistEntity) entity;
-				if (playlist.getId() > maxPk) {
-					jdbcTemplate.execute(
-						"UPDATE Z_PRIMARYKEY SET Z_MAX =" + playlist.getId() + " WHERE Z_NAME='Playlist'");
-				}
-			} else if (entity instanceof SongEntity) {
-				Long maxPk = jdbcTemplate.queryForObject(
-					"SELECT Z_MAX from Z_PRIMARYKEY WHERE Z_NAME='Song'",
-					(rs, i) -> rs.getLong("Z_MAX"));
-				SongEntity songEntity = (SongEntity) entity;
-				if (songEntity.getId() > maxPk) {
-					jdbcTemplate.execute(
-						"UPDATE Z_PRIMARYKEY SET Z_MAX =" + songEntity.getId() + " WHERE Z_NAME='Song'");
-				}
+				primaryKey = primaryKeyRepository.playlistPrimaryKey();
+
 			}
+			else if (entity instanceof SongEntity) {
+				primaryKey = primaryKeyRepository.songPrimaryKey();
+			}
+
+			primaryKeyRepository.increment(primaryKey);
 		};
 	}
 

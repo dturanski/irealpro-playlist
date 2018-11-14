@@ -28,18 +28,18 @@ import org.springframework.data.repository.query.Param;
 public interface SongRepository extends CrudRepository<SongEntity, Long> {
 
 	@Query("SELECT * FROM ZSONG where ZPLAYLIST is NULL ORDER BY ZTITLE")
-	Iterable<SongEntity> findallSongs();
+	Iterable<SongEntity> findallOriginalSongs();
 
 	@Query("SELECT * FROM ZSONG where ZUNIQUEID=:uniqueId")
 	SongEntity findByUniqueId(@Param("uniqueId") String uniqueId);
 
 	@Query("SELECT * FROM ZSONG where ZTITLE=:title AND ZPLAYLIST=:playlist")
-	SongEntity findSongByTitleAndPlaylist(@Param("title") String title, @Param("playlist") Long playlist);
+	SongEntity findByTitleAndPlaylist(@Param("title") String title, @Param("playlist") Long playlist);
 
 	@Query("SELECT * FROM ZSONG where ZTITLE=:title AND ZPLAYLIST is NULL")
-	SongEntity findSongByTitle(@Param("title") String title);
+	SongEntity findOriginalSongByTitle(@Param("title") String title);
 
 	@Query("SELECT * FROM ZSONG where ZPLAYLIST = :playlist")
-	Iterable<SongEntity> findSongsByPlaylist(@Param("playlist") Long playlist);
+	Iterable<SongEntity> findByPlaylist(@Param("playlist") Long playlist);
 
 }

@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author David Turanski
  **/
-@SpringBootTest
+@SpringBootTest(properties = {"logging.level.org.springframework.data=INFO"})
 @RunWith(SpringRunner.class)
 public class PlaylistTests {
 

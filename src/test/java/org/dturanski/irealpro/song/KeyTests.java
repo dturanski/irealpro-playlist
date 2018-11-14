@@ -39,7 +39,6 @@ public class KeyTests {
 		assertThat(Key.of("AbMin")).isEqualTo(Key.A_FLAT_MINOR);
 	}
 
-
 	@Test
 	public void relativeMinors() {
 		assertThat(Key.of("A").relative()).isEqualTo(Key.F_SHARP_MINOR);
@@ -68,7 +67,5 @@ public class KeyTests {
 		assertThat(Key.of("F#-").relative()).isEqualTo(Key.A_MAJOR);
 		assertThat(Key.of("G-").relative()).isEqualTo(Key.B_FLAT_MAJOR);
 		assertThat(Key.of("Ab-").relative()).isEqualTo(Key.B_MAJOR);
-	};
-
-
+	}
 }
