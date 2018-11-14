@@ -31,9 +31,10 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class RegexSetListEntryParser implements SetListEntryParser {
 
-	private static final Pattern containsKeyPattern = Pattern.compile("\\A(.+)\\s*(\\(((\\w+))\\)\\Z)");
+	private static final Pattern containsKeyPattern = Pattern.compile("\\A(.+)\\s*(\\((([\\w-]+))\\)\\Z)");
 
-	private static final Pattern patternWithKey = Pattern.compile("\\A(\\d+\\s?[-\\.]\\s)?(.+)\\s*(\\(((\\w+))\\)\\Z)");
+	private static final Pattern patternWithKey = Pattern.compile("\\A(\\d+\\s?[-\\.]\\s)?(.+)\\s*(\\((([\\w-]+))\\)"
+		+ "\\Z)");
 
 	private static final Pattern patternWithNoKey = Pattern.compile("\\A(\\d+\\s?[-\\.]\\s)?(.+)\\Z");
 

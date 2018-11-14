@@ -46,7 +46,7 @@ public class SongService {
 
 	public List<SongEntity> searchSongsByTitle(String title) {
 		Assert.hasText(title, "'title' must contain text");
-		SongEntity unique = repository.findByTitle(title);
+		SongEntity unique = repository.findSongByTitle(title);
 		if (unique != null) {
 			return Collections.singletonList(unique);
 		}
@@ -61,6 +61,10 @@ public class SongService {
 			return Collections.singletonList(songEntity.get());
 		}
 		return songEntityList;
+	}
+
+	public List<SongEntity> findSongsByPlayList(long playlistId) {
+		return (List<SongEntity>) repository.findSongsByPlaylist(playlistId);
 	}
 
 	@Transactional

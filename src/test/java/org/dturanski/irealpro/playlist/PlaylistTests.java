@@ -18,6 +18,7 @@ package org.dturanski.irealpro.playlist;
 
 import java.util.List;
 
+import org.dturanski.irealpro.DataAccessConfiguration;
 import org.dturanski.irealpro.playlist.domain.PlaylistEntity;
 import org.dturanski.irealpro.playlist.repository.PlaylistRepository;
 import org.dturanski.irealpro.song.domain.SongEntity;
@@ -29,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author David Turanski
@@ -41,22 +45,30 @@ public class PlaylistTests {
 	PlaylistRepository playlistRepository;
 
 	@Autowired
+	DataAccessConfiguration dataAccessConfiguration;
+
+	@Autowired
 	SongService songService;
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
 	@Test
+	@Transactional
 	public void test() {
 
 		PlaylistEntity playlist = new PlaylistEntity();
 		playlist.setName("NewPlaylist3");
 		final PlaylistEntity saved = playlistRepository.save(playlist);
 
-		List<SongEntity> songs = songService.searchSongsByTitle("Never");
+		assertThat(saved.getId()).isNotNull();
+
+		List<SongEntity> songs = songService.searchSongsByTitle("Love");
 		for (int i = 0; i < songs.size(); i++) {
 			SongEntity s = songs.get(i);
 			songService.addSongToPlaylist(s.getUniqueId(), saved.getId(), i + 1, null);
 		};
+
+		assertThat(songService.findSongsByPlayList(saved.getId()).size()).isEqualTo(3);
 	}
 }

@@ -37,6 +37,9 @@ public interface SongRepository extends CrudRepository<SongEntity, Long> {
 	SongEntity findSongByTitleAndPlaylist(@Param("title") String title, @Param("playlist") Long playlist);
 
 	@Query("SELECT * FROM ZSONG where ZTITLE=:title AND ZPLAYLIST is NULL")
-	SongEntity findByTitle(@Param("title") String title);
+	SongEntity findSongByTitle(@Param("title") String title);
+
+	@Query("SELECT * FROM ZSONG where ZPLAYLIST = :playlist")
+	Iterable<SongEntity> findSongsByPlaylist(@Param("playlist") Long playlist);
 
 }

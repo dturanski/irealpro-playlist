@@ -45,7 +45,7 @@ public class DataAccessConfiguration {
 
 		return event -> {
 			Long id = getId(event.getEntity());
-			if (id == null) {
+			if (id != null) {
 				return;
 			}
 
@@ -103,6 +103,15 @@ public class DataAccessConfiguration {
 				if (playlist.getId() > maxPk) {
 					jdbcTemplate.execute(
 						"UPDATE Z_PRIMARYKEY SET Z_MAX =" + playlist.getId() + " WHERE Z_NAME='Playlist'");
+				}
+			} else if (entity instanceof SongEntity) {
+				Long maxPk = jdbcTemplate.queryForObject(
+					"SELECT Z_MAX from Z_PRIMARYKEY WHERE Z_NAME='Song'",
+					(rs, i) -> rs.getLong("Z_MAX"));
+				SongEntity songEntity = (SongEntity) entity;
+				if (songEntity.getId() > maxPk) {
+					jdbcTemplate.execute(
+						"UPDATE Z_PRIMARYKEY SET Z_MAX =" + songEntity.getId() + " WHERE Z_NAME='Song'");
 				}
 			}
 		};

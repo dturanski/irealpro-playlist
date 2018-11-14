@@ -36,7 +36,7 @@ public class SongEntity {
 	String title;
 
 	@Column("ZPLAYLIST")
-	Long playlistId;
+	Long playlist;
 
 	@Column("ZCHORDPROGRESSION")
 	String chordProgression;
@@ -52,9 +52,6 @@ public class SongEntity {
 
 	@Column("ZSORTINGINDEX")
 	private Long sortingIndex;
-
-	@Column("ZPLAYLIST")
-	private Long playlist;
 
 	@Column("ZCREATEDDATE")
 	private Double createdDate;
