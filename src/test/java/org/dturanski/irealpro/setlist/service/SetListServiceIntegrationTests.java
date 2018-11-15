@@ -109,7 +109,7 @@ public class SetListServiceIntegrationTests {
 				assertThat(s.getKey()).isNull();
 				assertThat(s.getTranspose().isPresent()).isFalse();
 				assertThat(s.getSelectedUniqueId()).isNull();
-				assertThat(s.getUniqueIds().size()).isEqualTo(2);
+				assertThat(s.getCandidates().size()).isEqualTo(2);
 				break;
 			case "Green Eyes":
 				assertThat(s.getKey().notation()).isEqualTo("Eb");

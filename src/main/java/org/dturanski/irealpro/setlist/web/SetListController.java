@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package org.dturanski.irealpro.song.web;
+package org.dturanski.irealpro.setlist.web;
 
-import java.util.List;
+import org.dturanski.irealpro.setlist.domain.SetList;
+import org.dturanski.irealpro.setlist.service.SetListService;
 
-import org.dturanski.irealpro.song.service.SongService;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author David Turanski
  **/
 @RestController
-public class SongController {
+public class SetListController {
 
-	private final SongService songService;
-	public SongController(SongService songService) {
-		this.songService = songService;
+	private final SetListService setListService;
+	public SetListController(SetListService setListService) {
+		this.setListService = setListService;
 	}
 
-	@GetMapping("/songs")
-	public List<SongDTO> searchByTitle(@RequestParam String title) {
-		return this.songService.searchSongsByTitle(title).stream().map(SongDTO::fromEntity).collect(toList());
+	@PostMapping(path = "/setlist/prepare", consumes = "text/plain", produces = "application/json")
+	public SetList prepareSetList(@RequestBody String content) {
+		return this.setListService.prepare(content);
 	}
 }

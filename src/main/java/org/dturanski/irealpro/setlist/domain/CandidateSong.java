@@ -21,6 +21,7 @@ import java.util.Set;
 
 import lombok.Data;
 import org.dturanski.irealpro.song.web.Key;
+import org.dturanski.irealpro.song.web.SongDTO;
 
 /**
  * @author David Turanski
@@ -30,6 +31,6 @@ public class CandidateSong {
 	private String title;
 	private Key key;
 	private Optional<Key> transpose = Optional.empty();
-	private Set<String> uniqueIds;
+	private Set<SongDTO> candidates;
 	private String selectedUniqueId;
 }

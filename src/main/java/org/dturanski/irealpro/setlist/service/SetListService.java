@@ -28,6 +28,7 @@ import org.dturanski.irealpro.setlist.domain.SetList;
 import org.dturanski.irealpro.song.domain.SongEntity;
 import org.dturanski.irealpro.song.service.SongService;
 import org.dturanski.irealpro.song.web.Key;
+import org.dturanski.irealpro.song.web.SongDTO;
 
 import org.springframework.util.Assert;
 
@@ -58,7 +59,7 @@ public class SetListService {
 			.map(parser::parse)
 			.filter(s -> s != null)
 			.map(this::match)
-			.filter(s -> s.getUniqueIds() != null)
+			.filter(s -> s.getCandidates() != null)
 			.collect(Collectors.toList()));
 		return setList;
 	}
@@ -72,9 +73,9 @@ public class SetListService {
 
 		songs.stream().forEach(s -> log.info("'{}' matches '{}'", candidateSong.getTitle(), s.getTitle()));
 
-		candidateSong.setUniqueIds(songs.stream().map(SongEntity::getUniqueId).collect(Collectors.toSet()));
+		candidateSong.setCandidates(songs.stream().map(SongDTO::fromEntity).collect(Collectors.toSet()));
 
-		if (candidateSong.getUniqueIds().size() == 1) {
+		if (candidateSong.getCandidates().size() == 1) {
 			SongEntity songEntity = songs.get(0);
 			candidateSong.setSelectedUniqueId(songEntity.getUniqueId());
 			if (candidateSong.getKey() == null) {

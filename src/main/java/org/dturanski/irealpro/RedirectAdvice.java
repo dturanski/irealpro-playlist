@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package org.dturanski.irealpro.playlist;
+package org.dturanski.irealpro;
 
-import org.dturanski.irealpro.playlist.repository.PlaylistRepository;
-import org.dturanski.irealpro.playlist.service.PlaylistService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * @author David Turanski
  **/
-
-@Configuration
-public class PlaylistConfiguration {
-
-	@Autowired
-	JdbcTemplate jdbcTemplate;
-
-	@Bean
-	public PlaylistService playlistService(PlaylistRepository playlistRepository) {
-		return new PlaylistService(playlistRepository);
+@Component
+@ControllerAdvice
+class RedirectAdvice {
+	@ExceptionHandler(NoHandlerFoundException.class)
+	public RedirectView notFound() {
+		return new RedirectView("/");
 	}
-
 }

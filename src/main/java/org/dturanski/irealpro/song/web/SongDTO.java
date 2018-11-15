@@ -29,10 +29,13 @@ public class SongDTO {
 
 	private String uniqueId;
 
+	private String key;
+
 	public static SongDTO fromEntity(SongEntity songEntity) {
 		SongDTO song = new SongDTO();
 		song.setTitle(songEntity.getTitle());
 		song.setUniqueId(songEntity.getUniqueId());
+		song.setKey(songEntity.getKeySignature());
 		return song;
 	}
 

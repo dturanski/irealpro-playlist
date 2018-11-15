@@ -18,15 +18,21 @@ package org.dturanski.irealpro;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.dturanski.irealpro.playlist.domain.PlaylistEntity;
+import org.dturanski.irealpro.playlist.repository.PlaylistRepository;
 import org.dturanski.irealpro.playlist.service.PlaylistService;
 import org.dturanski.irealpro.setlist.domain.PrimaryKey;
 import org.dturanski.irealpro.setlist.repository.PrimaryKeyRepository;
+import org.dturanski.irealpro.setlist.service.RegexSetListEntryParser;
+import org.dturanski.irealpro.setlist.service.SetListService;
 import org.dturanski.irealpro.song.domain.SongEntity;
+import org.dturanski.irealpro.song.repository.SongRepository;
+import org.dturanski.irealpro.song.service.SongService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.data.relational.core.mapping.event.AfterSaveEvent;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,6 +41,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @author David Turanski
  **/
 @Configuration
+@EnableJdbcRepositories
 public class DataAccessConfiguration {
 
 	//TODO: Figure out the TIMESTAMP conversion in sqlite 3.
@@ -42,16 +49,31 @@ public class DataAccessConfiguration {
 
 	public static final long DONT_KNOW_WHAT_THIS_IS = 1L;
 
-	@Autowired
-	private PlaylistService playlistService;
+	@Bean
+	public SetListService setListService(PlaylistService playlistService, SongService songService) {
+		return new SetListService(playlistService, songService, new RegexSetListEntryParser());
+	}
 
-	@Autowired
-	private PrimaryKeyRepository primaryKeyRepository;
+	@Bean
+	public SongService songService(SongRepository repository) {
+		return new SongService(repository);
+	}
+
+	@Bean
+	public PlaylistService playlistService(PlaylistRepository playlistRepository) {
+		return new PlaylistService(playlistRepository);
+	}
 
 	@Bean
 	public PrimaryKeyRepository primaryKeyRepository(JdbcTemplate jdbcTemplate) {
 		return new PrimaryKeyRepository(jdbcTemplate);
 	}
+
+	@Autowired
+	private PlaylistService  playlistService;
+
+	@Autowired
+	private PrimaryKeyRepository primaryKeyRepository;
 
 	@Bean
 	public ApplicationListener<BeforeSaveEvent> beforeSave() {
