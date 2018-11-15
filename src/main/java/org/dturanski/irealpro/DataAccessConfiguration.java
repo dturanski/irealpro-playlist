@@ -22,6 +22,8 @@ import org.dturanski.irealpro.playlist.repository.PlaylistRepository;
 import org.dturanski.irealpro.playlist.service.PlaylistService;
 import org.dturanski.irealpro.setlist.domain.PrimaryKey;
 import org.dturanski.irealpro.setlist.repository.PrimaryKeyRepository;
+import org.dturanski.irealpro.setlist.repository.PrimaryKeyRepositoryCustom;
+import org.dturanski.irealpro.setlist.repository.PrimaryKeyRepositoryCustomImpl;
 import org.dturanski.irealpro.setlist.service.RegexSetListEntryParser;
 import org.dturanski.irealpro.setlist.service.SetListService;
 import org.dturanski.irealpro.song.domain.SongEntity;
@@ -65,8 +67,8 @@ public class DataAccessConfiguration {
 	}
 
 	@Bean
-	public PrimaryKeyRepository primaryKeyRepository(JdbcTemplate jdbcTemplate) {
-		return new PrimaryKeyRepository(jdbcTemplate);
+	public PrimaryKeyRepositoryCustom primaryKeyRepositoryCustom(JdbcTemplate jdbcTemplate) {
+		return new PrimaryKeyRepositoryCustomImpl(jdbcTemplate);
 	}
 
 	@Autowired

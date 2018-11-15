@@ -17,8 +17,12 @@
 package org.dturanski.irealpro.setlist.domain;
 
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author David Turanski
@@ -27,7 +31,13 @@ import lombok.Data;
 public class SetList {
 
 	String name;
+	List<SetListEntry> entries;
 
-
-	List<CandidateSong> candidateSongs;
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class SetListEntry {
+		private String uniqueId;
+		private String transposeTo;
+	}
 }

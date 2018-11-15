@@ -19,6 +19,8 @@ package org.dturanski.irealpro.setlist.domain;
 import java.util.Optional;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.dturanski.irealpro.song.web.Key;
 import org.dturanski.irealpro.song.web.SongDTO;
@@ -29,8 +31,24 @@ import org.dturanski.irealpro.song.web.SongDTO;
 @Data
 public class CandidateSong {
 	private String title;
+	@JsonIgnore
 	private Key key;
+	@JsonIgnore
 	private Optional<Key> transpose = Optional.empty();
 	private Set<SongDTO> candidates;
 	private String selectedUniqueId;
+
+	@JsonProperty("key")
+	public String getKeyNotation() {
+		if (key != null) {
+			return key.notation();
+		}
+		return "";
+	}
+
+	@JsonProperty("transpose")
+	public String getTransposeNotation() {
+		return transpose.isPresent() ? transpose.get().notation(): "";
+	}
+
 }

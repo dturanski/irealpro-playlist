@@ -16,6 +16,7 @@
 
 package org.dturanski.irealpro.playlist.service;
 
+import org.dturanski.irealpro.playlist.domain.PlaylistEntity;
 import org.dturanski.irealpro.playlist.repository.PlaylistRepository;
 
 import org.springframework.util.Assert;
@@ -34,5 +35,11 @@ public class PlaylistService {
 
 	public Long playlistCount() {
 		return this.playlistRepository.count();
+	}
+
+	public PlaylistEntity create(PlaylistEntity playlistEntity) {
+		Assert.notNull(playlistEntity, "'playlistEntity' cannot be null.");
+		playlistEntity.setId(null);
+		return playlistRepository.save(playlistEntity);
 	}
 }

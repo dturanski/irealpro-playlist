@@ -30,7 +30,7 @@ import org.springframework.data.relational.core.mapping.Table;
 public class PrimaryKey {
 
 	@Id
-	@Column(value = "Z_ENT",keyColumn = "Z_ENT")
+	@Column(value = "Z_ENT")
 	private Long id;
 
 	@Column("Z_NAME")

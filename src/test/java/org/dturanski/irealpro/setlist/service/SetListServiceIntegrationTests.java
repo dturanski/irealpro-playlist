@@ -17,8 +17,13 @@
 package org.dturanski.irealpro.setlist.service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.dturanski.irealpro.setlist.domain.CandidateSong;
 import org.dturanski.irealpro.setlist.domain.SetList;
+import org.dturanski.irealpro.song.domain.SongEntity;
+import org.dturanski.irealpro.song.service.SongService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,19 +46,22 @@ public class SetListServiceIntegrationTests {
 	@Autowired
 	private SetListService setListService;
 
+	@Autowired
+	private SongService songService;
+
 	@Test
 	public void prepareNumberedListWithKeys() throws IOException {
 
 		String contents = readResource("numbered-setlist.txt");
-		SetList setList = setListService.prepare(contents);
+		List<CandidateSong> candidateSongs = setListService.prepare(contents);
 
 		System.out.println("\nsetlist\n");
-		setList.getCandidateSongs().stream().forEach(System.out::println);
+		candidateSongs.stream().forEach(System.out::println);
 
 		int lines = contents.split("\n").length;
-		assertThat(setList.getCandidateSongs().size()).isEqualTo(lines);
+		assertThat(candidateSongs.size()).isEqualTo(lines);
 
-		setList.getCandidateSongs().stream().forEach(s -> {
+		candidateSongs.stream().forEach(s -> {
 			assertThat(s.getTitle()).isIn("Heartaches", "Dear Old Stockholm", "I Fall In Love Too Easily",
 				"One I Love (Belongs To Somebody Else), The");
 			switch (s.getTitle()) {
@@ -84,15 +92,15 @@ public class SetListServiceIntegrationTests {
 	public void prepareSimpleListWithKeys() throws IOException {
 
 		String contents = readResource("setlist-with-keys.txt");
-		SetList setList = setListService.prepare(contents);
+		List<CandidateSong> candidateSongs = setListService.prepare(contents);
 
 		System.out.println("\nsetlist\n");
-		setList.getCandidateSongs().stream().forEach(System.out::println);
+		candidateSongs.stream().forEach(System.out::println);
 
 		int lines = contents.split("\n").length;
-		assertThat(setList.getCandidateSongs().size()).isEqualTo(lines);
+		assertThat(candidateSongs.size()).isEqualTo(lines);
 
-		setList.getCandidateSongs().stream().forEach(s -> {
+		candidateSongs.stream().forEach(s -> {
 			assertThat(s.getTitle()).isIn(
 				"Gonna Sit Right Down and Write Myself a Letter",
 				"Blue Skies (Bb or G)",
@@ -109,7 +117,7 @@ public class SetListServiceIntegrationTests {
 				assertThat(s.getKey()).isNull();
 				assertThat(s.getTranspose().isPresent()).isFalse();
 				assertThat(s.getSelectedUniqueId()).isNull();
-				assertThat(s.getCandidates().size()).isEqualTo(2);
+				assertThat(s.getCandidates().size()).isEqualTo(3);
 				break;
 			case "Green Eyes":
 				assertThat(s.getKey().notation()).isEqualTo("Eb");
@@ -134,10 +142,10 @@ public class SetListServiceIntegrationTests {
 	public void prepareSimpleSetListWithNoKeys() throws IOException {
 
 		String contents = readResource("setlist-nokeys.txt");
-		SetList setList = setListService.prepare(contents);
+		List<CandidateSong> candidateSongs = setListService.prepare(contents);
 		System.out.println("\nsetlist\n");
-		setList.getCandidateSongs().stream().forEach(System.out::println);
-		setList.getCandidateSongs().stream().forEach(s -> {
+		candidateSongs.stream().forEach(System.out::println);
+		candidateSongs.stream().forEach(s -> {
 			assertThat(s.getTitle()).isIn(
 				"Gonna Sit Right Down and Write Myself a Letter",
 				"Blue Skies",
@@ -170,14 +178,29 @@ public class SetListServiceIntegrationTests {
 		});
 	}
 
-		private String readResource (String resourcePath) throws IOException {
-			return convertStreamToString(new ClassPathResource(resourcePath).getInputStream());
+	@Transactional
+	@Test
+	public void createPlaylist() {
+		List<SongEntity> songs = songService.searchSongsByTitle("Love");
 
-		}
+		final SetList setList = new SetList();
+		setList.setEntries(songs.stream().map(s -> {
+			SetList.SetListEntry setListEntry = new SetList.SetListEntry(s.getUniqueId(), null);
+			return setListEntry;
+		}).collect(Collectors.toList()));
 
-		private static String convertStreamToString (java.io.InputStream is){
-			java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-			return s.hasNext() ? s.next() : "";
-		}
+		Long playlistId = setListService.create(setList);
+		assertThat(songService.findSongsByPlayList(playlistId)).size().isEqualTo(3);
+	}
+
+	private String readResource(String resourcePath) throws IOException {
+		return convertStreamToString(new ClassPathResource(resourcePath).getInputStream());
 
 	}
+
+	private static String convertStreamToString(java.io.InputStream is) {
+		java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+		return s.hasNext() ? s.next() : "";
+	}
+
+}

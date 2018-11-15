@@ -49,6 +49,5 @@ public class SongServiceTests {
 
 		songs = songService.searchSongsByTitle("The One I Love Belongs To Somebody Else");
 		assertThat(songs.size()).isOne();
-
 	}
 }

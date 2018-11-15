@@ -18,22 +18,23 @@ package org.dturanski.irealpro.setlist.repository;
 
 import org.dturanski.irealpro.setlist.domain.PrimaryKey;
 
-import org.springframework.data.jdbc.repository.query.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * @author David Turanski
  **/
-public interface PrimaryKeyRepository extends CrudRepository<PrimaryKey, Long>, PrimaryKeyRepositoryCustom {
+public class PrimaryKeyRepositoryCustomImpl implements PrimaryKeyRepositoryCustom {
 
-	@Query("SELECT * from Z_PRIMARYKEY where Z_NAME='Playlist'")
-	PrimaryKey playlistPrimaryKey();
+	private final JdbcTemplate jdbcTemplate;
 
-	@Query("SELECT * from Z_PRIMARYKEY where Z_NAME='Song'")
-	PrimaryKey songPrimaryKey();
+	public PrimaryKeyRepositoryCustomImpl(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
 
-	@Query("SELECT * from Z_PRIMARYKEY where Z_NAME=:name")
-	PrimaryKey findPrimaryKeyByName(@Param("name") String name);
-
+	public PrimaryKey increment(PrimaryKey primaryKey) {
+		jdbcTemplate.update("UPDATE Z_PRIMARYKEY SET Z_MAX=? where Z_ENT=?", primaryKey.getMax() + 1,
+			primaryKey.getId());
+		primaryKey.setMax(primaryKey.getMax() + 1);
+		return primaryKey;
+	}
 }

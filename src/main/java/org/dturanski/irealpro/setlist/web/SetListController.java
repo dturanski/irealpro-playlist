@@ -16,6 +16,9 @@
 
 package org.dturanski.irealpro.setlist.web;
 
+import java.util.List;
+
+import org.dturanski.irealpro.setlist.domain.CandidateSong;
 import org.dturanski.irealpro.setlist.domain.SetList;
 import org.dturanski.irealpro.setlist.service.SetListService;
 
@@ -35,7 +38,7 @@ public class SetListController {
 	}
 
 	@PostMapping(path = "/setlist/prepare", consumes = "text/plain", produces = "application/json")
-	public SetList prepareSetList(@RequestBody String content) {
+	public List<CandidateSong> prepareSetList(@RequestBody String content) {
 		return this.setListService.prepare(content);
 	}
 }

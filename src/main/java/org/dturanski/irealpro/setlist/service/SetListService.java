@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.extern.slf4j.Slf4j;
+import org.dturanski.irealpro.playlist.domain.PlaylistEntity;
 import org.dturanski.irealpro.playlist.service.PlaylistService;
 import org.dturanski.irealpro.setlist.domain.CandidateSong;
 import org.dturanski.irealpro.setlist.domain.SetList;
@@ -30,6 +31,7 @@ import org.dturanski.irealpro.song.service.SongService;
 import org.dturanski.irealpro.song.web.Key;
 import org.dturanski.irealpro.song.web.SongDTO;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -52,16 +54,38 @@ public class SetListService {
 		this.parser = parser;
 	}
 
-	public SetList prepare(String contents) {
+	/**
+	 *
+	 * @param contents
+	 * @return
+	 */
+	public List<CandidateSong> prepare(String contents) {
 		String[] lines = contents.split("\\n");
-		SetList setList = new SetList();
-		setList.setCandidateSongs(Stream.of(lines)
+
+		return Stream.of(lines)
 			.map(parser::parse)
 			.filter(s -> s != null)
 			.map(this::match)
-			.filter(s -> s.getCandidates() != null)
-			.collect(Collectors.toList()));
-		return setList;
+			.collect(Collectors.toList());
+	}
+
+	/**
+	 *
+	 * @param setList
+	 * @return
+	 */
+	@Transactional
+	public Long create(SetList setList) {
+		PlaylistEntity playlist = new PlaylistEntity();
+		playlist.setName("NewPlaylist3");
+		final PlaylistEntity saved = playlistService.create(playlist);
+
+		int i = 0;
+		setList.getEntries().forEach(e-> {
+			songService.addSongToPlaylist(e.getUniqueId(), saved.getId(), i + 1, e.getTransposeTo());
+		});
+
+		return saved.getId();
 	}
 
 	private CandidateSong match(final CandidateSong candidateSong) {

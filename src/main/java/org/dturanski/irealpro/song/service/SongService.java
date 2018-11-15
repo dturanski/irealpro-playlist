@@ -19,6 +19,7 @@ package org.dturanski.irealpro.song.service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -51,8 +52,10 @@ public class SongService {
 			return Collections.singletonList(unique);
 		}
 
+		BiPredicate<String, String> match = (s, t) -> FuzzySearch.tokenSetRatio(s, t) > 75;
+
 		List<SongEntity> songEntityList = StreamSupport.stream(repository.findallOriginalSongs().spliterator(), false)
-			.filter(song -> FuzzySearch.tokenSetRatio(song.getTitle(), title) > 90)
+			.filter(song -> match.test(song.getTitle(), title))
 			.collect(Collectors.toList());
 
 		Optional<SongEntity> songEntity =
@@ -87,4 +90,5 @@ public class SongService {
 		}
 		repository.save(songEntity);
 	}
+	;
 }

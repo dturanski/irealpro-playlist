@@ -18,22 +18,10 @@ package org.dturanski.irealpro.setlist.repository;
 
 import org.dturanski.irealpro.setlist.domain.PrimaryKey;
 
-import org.springframework.data.jdbc.repository.query.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-
 /**
  * @author David Turanski
  **/
-public interface PrimaryKeyRepository extends CrudRepository<PrimaryKey, Long>, PrimaryKeyRepositoryCustom {
+public interface PrimaryKeyRepositoryCustom {
 
-	@Query("SELECT * from Z_PRIMARYKEY where Z_NAME='Playlist'")
-	PrimaryKey playlistPrimaryKey();
-
-	@Query("SELECT * from Z_PRIMARYKEY where Z_NAME='Song'")
-	PrimaryKey songPrimaryKey();
-
-	@Query("SELECT * from Z_PRIMARYKEY where Z_NAME=:name")
-	PrimaryKey findPrimaryKeyByName(@Param("name") String name);
-
+	PrimaryKey increment(PrimaryKey primaryKey);
 }

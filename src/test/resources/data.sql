@@ -22,7 +22,8 @@ INSERT INTO ZSONG VALUES(9,2,5,0,0,180,0,NULL,563467802.09107005595,0.0,0.0,0.0,
 INSERT INTO ZSONG VALUES(10,2,1,0,0,0,0,NULL,529087146.61484199763,0.0,0.0,0.0,0.0,'*A{T44C^7 G7#5 |C^7 A-7 |E-7 A-7 |D7   |F6 F#o7 |C6/G A7b9 |N1D-7 Ab7 |G7   }        |N2D-7 G7 |C6   ]*B[lBb-7 Eb7 |Ab6 Ao7 |Bb-7 Eb7 |Ab6   |A-7 D7 |G^7 E-7 |A-7 D7 |D-7 G7#5 ]*A[C^7 G7#5 |C^7 A-7 |E-7 A-7 |D7   |F6 F#o7 |C6/G A7b9 |D-7 G7 |C6   Z ','Alter Louis','C',NULL,NULL,NULL,NULL,NULL,'Medium Swing','Do You Know What It Means?',NULL,'e17088761d491e0d1856f546a90810590ba26fc6');
 -- Taking A Chance On Love
 INSERT INTO ZSONG VALUES(11,2,1,0,0,0,0,NULL,529087146.67380100488,0.0,0.0,0.0,0.0,'T44{*AF^7 D-7 |G-7 D7 |G-7 C7 |F^7 A7 |D-7   |G7   |N1G-7 C7 |sA-7,Ab7,sG-7,C7,}        |N2lG-7 C7 |F6   ][*BC-7 F7 |Bb6 G7(Bo7), |C-7 F7 |Bb^7   |Bb-7 Eb7 |Ab6 Ao7 |Bb-7 Bo7 |C7   ][*AF^7 D-7 |G-7 D7 |G-7 C7 |F^7 A7 |D-7   |G7   |G-7 C7 |F6 s (G-),s (C7)Z ','Duke Vernon','F',NULL,NULL,NULL,NULL,NULL,'Medium Swing','Taking A Chance On Love',NULL,'016f9d449443199eedcfa0f1bf3ba6dd4643ed54');
-
+-- Morning
+INSERT INTO ZSONG VALUES(12,2,1,0,0,0,0,NULL,529087146.65046697855,0.0,0.0,0.0,0.0,'{*AT44lB-7,l E7 |A-7 D7 |B-7 E7 |A-7 D7 |D-7 G7 |E-7 A7 |B-7 E7 |N1A-7 D7 }            |N2A-7   ][*BD-7   | x  |C6   | x  |D-7   | x  |E7/B   |E7   ][*AlB-7,l E7 |A-7 D7 |B-7 E7 |A-7 D7 |D-7 G7 |E-7 A7 |B-7 E7 |A-7   Z ','Fischer Clare','A-',NULL,NULL,NULL,NULL,NULL,'Bossa Nova','Morning',NULL,'c719d746d751223bfdf1dad46343aec5c65ea1fc');
 
 INSERT INTO Z_PRIMARYKEY VALUES(1,'Playlist',0,0);
-INSERT INTO Z_PRIMARYKEY VALUES(2,'Song',0, 11);
+INSERT INTO Z_PRIMARYKEY VALUES(2,'Song',0, 12);
