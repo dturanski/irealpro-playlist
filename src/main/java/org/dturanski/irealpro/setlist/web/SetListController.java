@@ -41,4 +41,9 @@ public class SetListController {
 	public List<CandidateSong> prepareSetList(@RequestBody String content) {
 		return this.setListService.prepare(content);
 	}
+
+	@PostMapping(path="setlist/create", consumes = "application/json")
+	public void createPlaylist(@RequestBody SetList setList){
+		setListService.create(setList);
+	}
 }

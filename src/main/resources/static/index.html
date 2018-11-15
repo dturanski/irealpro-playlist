@@ -23,35 +23,65 @@
     <meta name="viewport" content="width=device-width"/>
     <base href="/"/>
     <!--<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>-->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"/>
     <!--<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>-->
     <style>
+        h1 {
+            font-size: 2.5em; /* 40px/16=2.5em */
+            font-family: Arial;
+            color: darkcyan;
+        }
+
         p {
             margin: 0;
-            color: blue;
+            color: darkcyan;
+            font-family: Arial;
         }
-        div {
-            float:left;
+
+        th {
+            font-family: Arial;
+            color: darkcyan;
         }
-        div,p {
+
+        td {
+            font-family: Arial;
+        }
+
+
+        div.results  {
             margin-left: 20px;
+            float: left;
         }
-        span {
-            color: red;
+
+        div.search {
+            margin-left: 20px;
+            float: left;
         }
+
+        #dialog-form {
+            background-color: darkkhaki;
+        }
+
+        .ui-dialog-titlebar-close {
+            visibility: hidden;
+        }
+
+
         .not_found {
             color: red;
-
         }
-         .btn {
-             background-color: DarkGrey;
-             border: none;
-             color: white;
-             padding: 5px 5px;
-             font-size: 10px;
-             cursor: pointer;
-         }
+
+        .btn {
+            background-color: DarkGrey;
+            border: none;
+            color: white;
+            padding: 5px 5px;
+            font-size: 10px;
+            cursor: pointer;
+        }
 
         /* Darker background on mouse-over */
         .btn:hover {
@@ -59,50 +89,41 @@
         }
     </style>
     <title>IReal Pro Set List Importer</title>
-    <script>
-
-
-        $(document).ready(
-            //     function() {
-            //     alert('ready')
-            //     $.ajax({
-            //         url: '/songs?title=Song',
-            //         type: "GET",
-            //         dataType: "json",
-            //         success: function (data) {
-            //             console.log(data);
-            //             alert(data);
-            //         },
-            //         fail: function () {
-            //             alert('fail');
-            //             console.log("Encountered an error")
-            //         }
-            //     });
-            // }
-        );
-    </script>
 </head>
 <body>
 <h1>IReal Pro Set List Importer</h1>
 <div class="search">
     <form id="form_setlist">
-        <p>Paste set list here</p>
-        <div>
+
+        <div class="search">
+            <p align="left">Paste set list here</p>
             <textarea id="ta_setlist" rows="20" cols="50"></textarea>
         </div>
-        <div>
-            <input type="submit" value="Search">
+        <div class="search">
+            <input type="submit" value="Search" >
         </div>
     </form>
 </div>
 <div class="results">
     <form id="import">
-    <div id="results_div"></div>
-    <div id="import_button_div"></div>
+        <div id="results_div" class="results"></div>
+        <div id="import_button_div" class="results"></div>
+    </form>
+</div>
+
+<!-- Modal Pop up -->
+<div id="dialog-form" title="Create new playlist" id="create_playlist">
+    <form>
+        <fieldset>
+            <label for="name">PlayList Name</label>
+            <input type="text" name="name" id="name" value="New Playlist" class="text ui-widget-content ui-corner-all">
+            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
     </form>
 </div>
 
 <script>
+    var $DATA;
     $("#form_setlist").submit(function (event) {
         $.ajax({
             url: '/setlist/prepare',
@@ -110,22 +131,26 @@
             data: $("#ta_setlist").val(),
             contentType: 'text/plain',
             success: function (data) {
+                $DATA = data;
                 console.log(data);
                 $('#results_div').empty();
                 $('#import_button_div').empty();
                 var table = $('<table id="import_table">').addClass('result_table');
-                $.each(data, function(i, value) {
+                table.append($('<tr>').addClass('result_header')
+                    .append($('<th>').text("Set List")).append($('<th>').text("Search Results")));
+
+                $.each(data, function (i, value) {
                     var row = $('<tr>').addClass('result_entry')
-                        .append($('<td>').text(value.title))
-                        .append($('<td>').text(value.candidates == null ? 'Not found' : value.candidates[0].title));
+                        .append($('<td>').text(value.title + (value.key ? ' (' + value.key + ')' : '')))
+                        .append(candidateContent(value));
 
                     if (value.candidates == null) {
                         row.addClass("not_found");
                     } else {
                         row.append($('<td>').append(
                             $('<button id="' + value.selectedUniqueId + '">').addClass('btn')
-                                .click(function(){
-                                    $(this).closest ('tr').remove ();
+                                .click(function () {
+                                    $(this).closest('tr').remove();
 
                                 })
                                 .append($('<i>').addClass('fa fa-close'))));
@@ -142,18 +167,91 @@
                 console.log("Search encountered an error")
             }
         });
+        document.activeElement.blur();
         event.preventDefault();
     });
 
-    $("#import").submit(function(event) {
+    function candidateContent(value) {
+        var text;
+        if (value.candidates == null) {
+            text = 'Not found.'
+        } else {
+            if (value.candidates.length > 1) {
+                alert('need to deal with multiple matches !!!');
+            }
+            var candidate = value.candidates[0];
+            text = candidate.title;
+            if (value.transpose) {
+                text = text + ' (' + candidate.key + ' to ' + value.transpose + ')';
+            } else {
+                text = text + ' (' + value.key + ')';
+            }
+        }
 
-        alert("! -> ");
-        $(".btn").each(function() {
-            console.log($(this)[0].id);
-        });
+        return $('<td>').text(text);
+    }
 
+    $("#import").submit(function (event) {
+        document.activeElement.blur();
+        dialog.dialog( "open" );
         event.preventDefault();
     })
+
+    function createPlaylist(name) {
+        console.log("Creating playlist" +  name);
+
+        var setList = {name: name, entries:[]};
+
+        $(".btn").each(function () {
+            var id = $(this)[0].id;
+            var entry = jQuery.grep($DATA, function (o, i) {
+                return o.selectedUniqueId == id;
+            });
+            if (entry != null) {
+                console.log(entry[0]);
+                setList.entries.push({uniqueId: entry[0].selectedUniqueId, transposeTo: entry[0].transpose});
+            }
+        });
+
+        if (setList.entries.length == 0) {
+            alert('Playlist contains no entries.');
+            return;
+        }
+
+        console.log(JSON.stringify(setList));
+
+        $.ajax({
+            url: '/setlist/create',
+            type: "POST",
+            data: JSON.stringify(setList),
+            contentType: 'application/json',
+            success: function () {
+                alert("Playlist created.");
+            },
+            fail: function () {
+                alert('Search encountered an error');
+                console.log("Search encountered an error");
+            }
+        });
+    }
+
+    dialog = $("#dialog-form").dialog({
+        autoOpen: false,
+        modal: true,
+        buttons: {
+            "Create Playlist": function () {
+                dialog.dialog("close");
+                createPlaylist($("#name").val().trim());
+            },
+            Cancel: function () {
+                dialog.dialog("close");
+            }
+        },
+        close: function () {
+            dialog.dialog("close");
+        }
+    });
+
 </script>
 
 </body>

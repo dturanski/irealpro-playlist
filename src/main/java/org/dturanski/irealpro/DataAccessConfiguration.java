@@ -16,6 +16,7 @@
 
 package org.dturanski.irealpro;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.dturanski.irealpro.playlist.domain.PlaylistEntity;
 import org.dturanski.irealpro.playlist.repository.PlaylistRepository;
@@ -44,6 +45,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  **/
 @Configuration
 @EnableJdbcRepositories
+@Slf4j
 public class DataAccessConfiguration {
 
 	//TODO: Figure out the TIMESTAMP conversion in sqlite 3.
@@ -112,6 +114,7 @@ public class DataAccessConfiguration {
 
 				song.setId(songPrimaryKey.getMax() + 1);
 				song.setCreatedDate(DUMMY_CREATED_DATE);
+				log.debug("Creating a new song {} with ID {}",song.getTitle(), song.getId());
 			}
 		};
 	}
