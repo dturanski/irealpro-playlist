@@ -50,8 +50,7 @@
             font-family: Arial;
         }
 
-
-        div.results  {
+        div.results {
             margin-left: 20px;
             float: left;
         }
@@ -61,14 +60,35 @@
             float: left;
         }
 
+        .ui-widget-content {
+            background: lightsteelblue;
+        }
+
+        #name {
+            background: lightcyan;
+        }
+
+        .ui-button {
+            background: lightcyan;
+        }
+
+        .ui-dialog-titlebar {
+            background: lightsteelblue;
+        }
+
         #dialog-form {
-            background-color: darkkhaki;
+            background: lightsteelblue;
         }
 
         .ui-dialog-titlebar-close {
             visibility: hidden;
         }
 
+        .warning {
+            background: orange;
+            display: inline-block;
+            font-size: small;
+        }
 
         .not_found {
             color: red;
@@ -92,6 +112,8 @@
 </head>
 <body>
 <h1>IReal Pro Set List Importer</h1>
+<p class="warning">WARNING: Close IReal Pro before you run this! You'll see your saved changes next time you open it.</p>
+<br/>
 <div class="search">
     <form id="form_setlist">
 
@@ -100,7 +122,7 @@
             <textarea id="ta_setlist" rows="20" cols="50"></textarea>
         </div>
         <div class="search">
-            <input type="submit" value="Search" >
+            <input type="submit" value="Search">
         </div>
     </form>
 </div>
@@ -130,6 +152,15 @@
             type: "POST",
             data: $("#ta_setlist").val(),
             contentType: 'text/plain',
+            statusCode: {
+                500: function () {
+                    alert("Server error encountered");
+                },
+
+                400: function () {
+                    alert("Invalid request");
+                }
+            },
             success: function (data) {
                 $DATA = data;
                 console.log(data);
@@ -148,12 +179,14 @@
                         row.addClass("not_found");
                     } else {
                         row.append($('<td>').append(
-                            $('<button id="' + value.selectedUniqueId + '">').addClass('btn')
-                                .click(function () {
-                                    $(this).closest('tr').remove();
+                            $('<button>').attr('id', 'btn.' + i).addClass('btn')
+                            .click(function () {
+                                $(this).closest('tr').remove();
 
-                                })
-                                .append($('<i>').addClass('fa fa-close'))));
+                            })
+                            .append($('<i>').addClass('fa fa-close'))
+                    ))
+                        ;
                     }
 
                     table.append(row);
@@ -171,46 +204,79 @@
         event.preventDefault();
     });
 
-    function candidateContent(value) {
-        var text;
-        if (value.candidates == null) {
-            text = 'Not found.'
-        } else {
-            if (value.candidates.length > 1) {
-                alert('need to deal with multiple matches !!!');
-            }
-            var candidate = value.candidates[0];
-            text = candidate.title;
-            if (value.transpose) {
-                text = text + ' (' + candidate.key + ' to ' + value.transpose + ')';
-            } else {
-                text = text + ' (' + value.key + ')';
-            }
-        }
+    function candidateTextValue(value, i) {
+        return appendKeyToTitle(value.candidates[i], value.transpose)
+    }
 
-        return $('<td>').text(text);
+    function appendKeyToTitle(candidate, transpose) {
+        if (transpose) {
+             return candidate.title + ' (' + candidate.key + ' to ' + transpose + ')';
+        } else {
+            return candidate.title + ' (' + candidate.key + ')';
+        }
+    }
+
+    function candidateContent(value) {
+        if (value.candidates == null) {
+            return $('<td>').text('Not found.');
+        }
+        if (value.candidates.length == 1) {
+            return $('<td>').text(candidateTextValue(value, 0));
+        }
+        else {
+            var select = $('<select>');
+            $.each(value.candidates, function (i) {
+                var opt = $('<option>');
+                if (i == 0) {
+                    opt = $('<option select="selected">');
+                }
+
+                opt.append(candidateTextValue(value, i));
+
+                select.addClass('select_song').append(opt);
+            });
+
+            return $('<td>').append(select);
+        }
     }
 
     $("#import").submit(function (event) {
         document.activeElement.blur();
-        dialog.dialog( "open" );
+        dialog.dialog("open");
         event.preventDefault();
     })
 
     function createPlaylist(name) {
-        console.log("Creating playlist" +  name);
+        console.log("Creating playlist" + name);
 
-        var setList = {name: name, entries:[]};
+        var setList = {name: name, entries: []};
 
         $(".btn").each(function () {
-            var id = $(this)[0].id;
-            var entry = jQuery.grep($DATA, function (o, i) {
-                return o.selectedUniqueId == id;
-            });
-            if (entry != null) {
-                console.log(entry[0]);
-                setList.entries.push({uniqueId: entry[0].selectedUniqueId, transposeTo: entry[0].transpose});
+            var btn =  $(this)[0];
+            var id = btn.id;
+
+            var i = id.split('.')[1];
+
+            var entry = $DATA[i];
+
+            console.log(entry);
+
+            var selected = {}
+            if (entry.candidates.length == 1) {
+                selected = {uniqueId: entry.selectedUniqueId, transposeTo: entry.transpose};
+            } else {
+                var el = $(btn).closest('tr').find(".select_song")[0];
+
+                $.each(entry.candidates, function (i, e) {
+
+                    if (appendKeyToTitle(e) == el.value) {
+                        selected.uniqueId =  e.uniqueId;
+                        selected.transposeTo = (entry.key != '' && entry.key != e.key) ? entry.key :'';
+                    }
+                });
             }
+            setList.entries.push(selected);
+
         });
 
         if (setList.entries.length == 0) {
@@ -220,11 +286,24 @@
 
         console.log(JSON.stringify(setList));
 
+        if (true) {
+            return
+        }
+
         $.ajax({
             url: '/setlist/create',
             type: "POST",
             data: JSON.stringify(setList),
             contentType: 'application/json',
+            statusCode: {
+                500: function () {
+                    alert("Server error encountered");
+                },
+
+                400: function () {
+                    alert("Invalid request");
+                }
+            },
             success: function () {
                 alert("Playlist created.");
             },
