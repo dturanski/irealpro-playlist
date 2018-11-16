@@ -17,7 +17,6 @@
 package org.dturanski.irealpro.setlist.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,7 +54,6 @@ public class SetListService {
 	}
 
 	/**
-	 *
 	 * @param contents
 	 * @return
 	 */
@@ -70,18 +68,17 @@ public class SetListService {
 	}
 
 	/**
-	 *
 	 * @param setList
 	 * @return
 	 */
 	@Transactional
 	public Long create(SetList setList) {
 		PlaylistEntity playlist = new PlaylistEntity();
-		playlist.setName("NewPlaylist3");
+		playlist.setName(setList.getName());
 		final PlaylistEntity saved = playlistService.create(playlist);
 
 		int i = 0;
-		setList.getEntries().forEach(e-> {
+		setList.getEntries().forEach(e -> {
 			songService.addSongToPlaylist(e.getUniqueId(), saved.getId(), i + 1, e.getTransposeTo());
 		});
 
@@ -97,7 +94,19 @@ public class SetListService {
 
 		songs.stream().forEach(s -> log.info("'{}' matches '{}'", candidateSong.getTitle(), s.getTitle()));
 
-		candidateSong.setCandidates(songs.stream().map(SongDTO::fromEntity).collect(Collectors.toSet()));
+		candidateSong.setCandidates(songs.stream().map(SongDTO::fromEntity)
+			.map(c-> {
+				if (candidateSong.getKey() != null) {
+					Key key = transpose(Key.of(c.getKey()), candidateSong.getKey());
+					if (candidateSong.getKey() != Key.of(c.getKey())) {
+						log.info("Transposing {} from {} to {}", c.getTitle(), candidateSong.getKey(), key);
+						c.setTranspose(key.notation());
+					}
+				}
+				return c;
+			})
+			.collect(Collectors.toSet()));
+
 
 		if (candidateSong.getCandidates().size() == 1) {
 			SongEntity songEntity = songs.get(0);
@@ -105,23 +114,14 @@ public class SetListService {
 			if (candidateSong.getKey() == null) {
 				candidateSong.setKey(Key.of(songEntity.getKeySignature()));
 			}
-			else if (candidateSong.getKey() != Key.of(songEntity.getKeySignature())) {
-
-				Key transpose = transpose(Key.of(songEntity.getKeySignature()),
-					candidateSong.getKey());
-
-				if (transpose != Key.of(songEntity.getKeySignature())) {
-					candidateSong.setTranspose(Optional.of(transpose));
-					log.info("Transposing {} from {} to {}", candidateSong.getTitle(),
-						Key.of(songEntity.getKeySignature()),
-						transpose);
-				}
-			}
 		}
 
 		return candidateSong;
 	}
 	private Key transpose(Key from, Key to) {
+		if (from == to) {
+			return from;
+		}
 		if (from.isMajor()) {
 			return to.isMajor() ? to : to.relative();
 		}

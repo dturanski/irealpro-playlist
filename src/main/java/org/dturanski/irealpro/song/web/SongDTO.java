@@ -31,11 +31,14 @@ public class SongDTO {
 
 	private String key;
 
+	private String transpose;
+
 	public static SongDTO fromEntity(SongEntity songEntity) {
 		SongDTO song = new SongDTO();
 		song.setTitle(songEntity.getTitle());
 		song.setUniqueId(songEntity.getUniqueId());
 		song.setKey(songEntity.getKeySignature());
+		song.setTranspose(songEntity.getTranspose() == null ? "" : songEntity.getTranspose());
 		return song;
 	}
 

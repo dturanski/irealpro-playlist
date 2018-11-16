@@ -24,6 +24,7 @@ import org.dturanski.irealpro.setlist.domain.CandidateSong;
 import org.dturanski.irealpro.setlist.domain.SetList;
 import org.dturanski.irealpro.song.domain.SongEntity;
 import org.dturanski.irealpro.song.service.SongService;
+import org.dturanski.irealpro.song.web.SongDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -64,25 +65,26 @@ public class SetListServiceIntegrationTests {
 		candidateSongs.stream().forEach(s -> {
 			assertThat(s.getTitle()).isIn("Heartaches", "Dear Old Stockholm", "I Fall In Love Too Easily",
 				"One I Love (Belongs To Somebody Else), The");
+			SongDTO songDTO = s.getCandidates().iterator().next();
 			switch (s.getTitle()) {
 			case "Heartaches":
 				assertThat(s.getKey().notation()).isEqualTo("Bb");
-				assertThat(s.getTranspose().isPresent()).isTrue();
-				assertThat(s.getTranspose().get().notation()).isEqualTo("Bb");
+
+				assertThat(songDTO.getTranspose()).isEqualTo("Bb");
+				assertThat(songDTO.getKey()).isEqualTo("G");
 				break;
 			case "Dear Old Stockholm":
 				assertThat(s.getKey().notation()).isEqualTo("D-");
-				assertThat(s.getTranspose().isPresent()).isFalse();
 				break;
 			case "I Fall In Love Too Easily":
 				assertThat(s.getKey().notation()).isEqualTo("Eb");
-				assertThat(s.getTranspose().isPresent()).isFalse();
 				break;
 
 			case "One I Love (Belongs To Somebody Else), The":
 				assertThat(s.getKey().notation()).isEqualTo("C");
-				assertThat(s.getTranspose().isPresent()).isTrue();
-				assertThat(s.getTranspose().get().notation()).isEqualTo("C");
+				songDTO = s.getCandidates().iterator().next();
+				assertThat(songDTO.getTranspose()).isEqualTo("C");
+				assertThat(songDTO.getKey()).isEqualTo("G");
 				break;
 			}
 		});
@@ -103,36 +105,45 @@ public class SetListServiceIntegrationTests {
 		candidateSongs.stream().forEach(s -> {
 			assertThat(s.getTitle()).isIn(
 				"Gonna Sit Right Down and Write Myself a Letter",
-				"Blue Skies (Bb or G)",
+				"Blue Skie",
 				"Green Eyes",
 				"Do You Know What It Means to Miss New Orleans?",
 				"Taking a Chance on Love");
+			SongDTO songDTO = s.getCandidates().iterator().next();
 			switch (s.getTitle()) {
 			case "Gonna Sit Right Down and Write Myself a Letter":
 				assertThat(s.getKey().notation()).isEqualTo("C");
-				assertThat(s.getTranspose().isPresent()).isTrue();
-				assertThat(s.getTranspose().get().notation()).isEqualTo("C");
+				assertThat(songDTO.getTranspose()).isEqualTo("C");
+				assertThat(songDTO.getKey()).isEqualTo("G");
 				break;
-			case "Blue Skies (Bb or G)":
-				assertThat(s.getKey()).isNull();
-				assertThat(s.getTranspose().isPresent()).isFalse();
+			case "Blue Skie":
+				assertThat(s.getKey().notation()).isEqualTo("Bb");
 				assertThat(s.getSelectedUniqueId()).isNull();
 				assertThat(s.getCandidates().size()).isEqualTo(3);
+				/**
+				 * Transpose must be Major -> Major or Minor -> Minor
+				 */
+				s.getCandidates().forEach(c-> {
+					if (c.getTitle().equals("Blue Skies 1")) {
+						assertThat(c.getTranspose()).isEqualTo("G-");
+					} else {
+						assertThat(c.getTranspose()).isEqualTo("Bb");
+					}
+				});
 				break;
 			case "Green Eyes":
 				assertThat(s.getKey().notation()).isEqualTo("Eb");
-				assertThat(s.getTranspose().isPresent()).isFalse();
 				break;
 
 			case "Do You Know What It Means to Miss New Orleans?":
 				assertThat(s.getKey().notation()).isEqualTo("F");
-				assertThat(s.getTranspose().isPresent()).isTrue();
-				assertThat(s.getTranspose().get().notation()).isEqualTo("F");
+				assertThat(songDTO.getTranspose()).isEqualTo("F");
+				assertThat(songDTO.getKey()).isEqualTo("C");
 				break;
 			case "Taking a Chance on Love":
 				assertThat(s.getKey().notation()).isEqualTo("C");
-				assertThat(s.getTranspose().isPresent()).isTrue();
-				assertThat(s.getTranspose().get().notation()).isEqualTo("C");
+				assertThat(songDTO.getTranspose()).isEqualTo("C");
+				assertThat(songDTO.getKey()).isEqualTo("F");
 				break;
 			}
 		});
@@ -155,24 +166,19 @@ public class SetListServiceIntegrationTests {
 			switch (s.getTitle()) {
 			case "Gonna Sit Right Down and Write Myself a Letter":
 				assertThat(s.getKey().notation()).isEqualTo("G");
-				assertThat(s.getTranspose().isPresent()).isFalse();
 				break;
 			case "Blue Skies":
 				assertThat(s.getKey().notation()).isEqualTo("C");
-				assertThat(s.getTranspose().isPresent()).isFalse();
 				break;
 			case "Green Eyes":
 				assertThat(s.getKey().notation()).isEqualTo("Eb");
-				assertThat(s.getTranspose().isPresent()).isFalse();
 				break;
 
 			case "Do You Know What It Means to Miss New Orleans?":
 				assertThat(s.getKey().notation()).isEqualTo("C");
-				assertThat(s.getTranspose().isPresent()).isFalse();
 				break;
 			case "Taking a Chance on Love":
 				assertThat(s.getKey().notation()).isEqualTo("F");
-				assertThat(s.getTranspose().isPresent()).isFalse();
 				break;
 			}
 		});

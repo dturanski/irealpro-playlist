@@ -41,6 +41,10 @@
             font-family: Arial;
         }
 
+        table {
+            border-spacing: 20px 0;
+        }
+
         th {
             font-family: Arial;
             color: darkcyan;
@@ -61,23 +65,27 @@
         }
 
         .ui-widget-content {
-            background: lightsteelblue;
+            background: lightgray;
         }
 
         #name {
             background: lightcyan;
+            color: darkcyan;
         }
 
         .ui-button {
             background: lightcyan;
+            color: darkcyan;
         }
 
         .ui-dialog-titlebar {
-            background: lightsteelblue;
+            background: lightgray;
+            color: darkcyan;
         }
 
         #dialog-form {
-            background: lightsteelblue;
+            background: lightgray;
+            color: darkcyan;
         }
 
         .ui-dialog-titlebar-close {
@@ -185,8 +193,7 @@
 
                             })
                             .append($('<i>').addClass('fa fa-close'))
-                    ))
-                        ;
+                        ));
                     }
 
                     table.append(row);
@@ -204,13 +211,10 @@
         event.preventDefault();
     });
 
-    function candidateTextValue(value, i) {
-        return appendKeyToTitle(value.candidates[i], value.transpose)
-    }
 
-    function appendKeyToTitle(candidate, transpose) {
-        if (transpose) {
-             return candidate.title + ' (' + candidate.key + ' to ' + transpose + ')';
+    function appendKeyToTitle(candidate) {
+        if (candidate.key != candidate.transpose && candidate.transpose != null) {
+             return candidate.title + ' (' + candidate.key + ' to ' + candidate.transpose + ')';
         } else {
             return candidate.title + ' (' + candidate.key + ')';
         }
@@ -221,7 +225,7 @@
             return $('<td>').text('Not found.');
         }
         if (value.candidates.length == 1) {
-            return $('<td>').text(candidateTextValue(value, 0));
+            return $('<td>').text(appendKeyToTitle(value.candidates[0]));
         }
         else {
             var select = $('<select>');
@@ -231,7 +235,7 @@
                     opt = $('<option select="selected">');
                 }
 
-                opt.append(candidateTextValue(value, i));
+                opt.append(appendKeyToTitle(value.candidates[i]));
 
                 select.addClass('select_song').append(opt);
             });
@@ -263,7 +267,7 @@
 
             var selected = {}
             if (entry.candidates.length == 1) {
-                selected = {uniqueId: entry.selectedUniqueId, transposeTo: entry.transpose};
+                selected = {uniqueId: entry.selectedUniqueId, transposeTo: entry.candidates[0].transpose};
             } else {
                 var el = $(btn).closest('tr').find(".select_song")[0];
 
@@ -271,7 +275,7 @@
 
                     if (appendKeyToTitle(e) == el.value) {
                         selected.uniqueId =  e.uniqueId;
-                        selected.transposeTo = (entry.key != '' && entry.key != e.key) ? entry.key :'';
+                        selected.transposeTo = e.transpose;
                     }
                 });
             }
@@ -285,10 +289,6 @@
         }
 
         console.log(JSON.stringify(setList));
-
-        if (true) {
-            return
-        }
 
         $.ajax({
             url: '/setlist/create',
