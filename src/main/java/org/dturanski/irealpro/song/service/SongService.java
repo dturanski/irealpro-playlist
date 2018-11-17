@@ -81,7 +81,7 @@ public class SongService {
 			log.warn(songEntity.getTitle() + " already exists in playlist");
 			return;
 		}
-
+		log.debug("adding song {} index {}", songEntity.getTitle(),sortingIndex);
 		songEntity.setId(null);
 		songEntity.setPlaylist(playlistId);
 		songEntity.setSortingIndex(sortingIndex);

@@ -213,7 +213,7 @@
 
 
     function appendKeyToTitle(candidate) {
-        if (candidate.key != candidate.transpose && candidate.transpose != null) {
+        if (candidate.key != candidate.transpose && candidate.transpose) {
              return candidate.title + ' (' + candidate.key + ' to ' + candidate.transpose + ')';
         } else {
             return candidate.title + ' (' + candidate.key + ')';

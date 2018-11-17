@@ -17,6 +17,7 @@
 package org.dturanski.irealpro.setlist.service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,9 +78,9 @@ public class SetListService {
 		playlist.setName(setList.getName());
 		final PlaylistEntity saved = playlistService.create(playlist);
 
-		int i = 0;
+		final AtomicInteger  i = new AtomicInteger();
 		setList.getEntries().forEach(e -> {
-			songService.addSongToPlaylist(e.getUniqueId(), saved.getId(), i + 1, e.getTransposeTo());
+			songService.addSongToPlaylist(e.getUniqueId(), saved.getId(), i.incrementAndGet(), e.getTransposeTo());
 		});
 
 		return saved.getId();
