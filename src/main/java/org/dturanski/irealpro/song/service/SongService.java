@@ -72,7 +72,11 @@ public class SongService {
 
 	@Transactional
 	public void addSongToPlaylist(String uniqueid, long playlistId, long sortingIndex, String transpose) {
-		Assert.hasText(uniqueid, "'uniqueId' must contain text.");
+		if (!StringUtils.hasText(uniqueid)) {
+			log.error("'uniqueid' is empty, Unable to import song.");
+			return;
+		}
+		//Assert.hasText(uniqueid, "'uniqueId' must contain text.");
 		SongEntity songEntity = repository.findByUniqueId(uniqueid);
 		if (songEntity == null) {
 			throw new RuntimeException("Cannot find SongEntity with unique ID = " + uniqueid);
